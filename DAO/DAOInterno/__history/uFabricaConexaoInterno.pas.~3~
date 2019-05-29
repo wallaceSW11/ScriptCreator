@@ -1,0 +1,33 @@
+unit uFabricaConexaoInterno;
+
+interface
+
+uses
+  System.SysUtils, System.Classes, Data.DB, Datasnap.DBClient,
+  ZAbstractRODataset, ZAbstractDataset, ZDataset, ZAbstractConnection,
+  ZConnection, ZDbcIntfs, StrUtils, Vcl.Forms, Vcl.Dialogs;
+
+type
+  TFabricaConexaoInterno= class
+public
+  class function Conectar():TZConnection;
+
+  end;
+
+implementation
+
+
+
+class function TFabricaConexaoInterno.Conectar():TZConnection;
+var
+  lConexao : TZConnection;
+begin
+  lConexao := TZConnection.Create(nil);
+  lConexao.Database := ExtractFileDir(Application.ExeName) + '\ScriptCreatorDB.s3db';
+  lConexao.Protocol := 'sqlite-3';
+  lConexao.LoginPrompt := False;
+  lConexao.TransactIsolationLevel := tiReadCommitted;
+  result := lConexao;
+end;
+
+end.

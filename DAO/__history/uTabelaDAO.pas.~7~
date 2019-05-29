@@ -1,0 +1,45 @@
+unit uTabelaDAO;
+
+interface
+
+uses
+  System.SysUtils, System.Generics.Collections, System.Win.IEInterfaces,
+  StrUtils,  Data.DB, Datasnap.DBClient,
+  ZAbstractRODataset, ZAbstractDataset, ZDataset, ZAbstractConnection,
+  ZConnection, ZDbcIntfs,  System.Classes, System.Rtti, System.TypInfo,
+  System.Variants, uCRUD, uTEditHelper, uTabela, uCadastroHelper;
+
+type
+  TTabelaDAO = class
+
+  private
+  const
+  CONSULTAR_TEBLAS =  'Select ' +
+                      '  TABLE_NAME as Nome, '+
+                      '  TABLE_SCHEMA as Schema '+
+                      'From ' +
+                      '	INFORMATION_SCHEMA.TABLES '+
+                      'Where '+
+                      '	(TABLE_SCHEMA = ''dbo'') and '+
+                      ' (TABLE_TYPE = ''BASE TABLE'') and '+
+                      ' (%s) '+
+                      'order by Nome ';
+
+public
+
+  class function RetornarTabelas(pFiltro: string):TObjectList<TTabela>;
+
+
+end;
+
+implementation
+
+{ TTextoPadraoDAO }
+
+class function TTabelaDAO.RetornarTabelas(pFiltro: string): TObjectList<TTabela>;
+begin
+  Result := TCRUD<TTabela>.Select(
+    Format(CONSULTAR_TEBLAS, [pFiltro]));
+end;
+end.
+

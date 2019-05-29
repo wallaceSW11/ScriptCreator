@@ -1,0 +1,44 @@
+unit uColunaDAO;
+
+interface
+
+uses
+  System.SysUtils, System.Generics.Collections, System.Win.IEInterfaces,
+  StrUtils,  Data.DB, Datasnap.DBClient,
+  ZAbstractRODataset, ZAbstractDataset, ZDataset, ZAbstractConnection,
+  ZConnection, ZDbcIntfs,  System.Classes, System.Rtti, System.TypInfo,
+  System.Variants, uCRUD, uTEditHelper, uColuna, uCadastroHelper;
+
+type
+  TColunaDAO = class
+
+  private
+  const
+  CONSULTAR_COLUNA =  'Select ' +
+                      '  TABLE_NAME as "Tabela", '+
+                      '  COLUMN_NAME as "Nome" '+
+                      'From '+
+                      '	INFORMATION_SCHEMA.COLUMNS '+
+                      'Where '+
+                      '	(TABLE_SCHEMA = ''%s'') and '+
+                      ' (TABLE_NAME = ''%s'') '+
+                      'order by "Nome" ';
+
+public
+
+  class function RetornarColunas(pSchema:string='dbo'; pTabela: string):TObjectList<TColuna>;
+
+
+end;
+
+implementation
+
+{ TTextoPadraoDAO }
+
+class function TColunaDAO.RetornarColunas(pSchema:string='dbo'; pTabela: string): TObjectList<TColuna>;
+begin
+  Result := TCRUD<TColuna>.Select(
+    Format(CONSULTAR_COLUNA, [pSchema, pTabela]));
+end;
+end.
+

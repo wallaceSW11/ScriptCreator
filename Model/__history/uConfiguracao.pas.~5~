@@ -1,0 +1,157 @@
+unit uConfiguracao;
+
+interface
+
+uses
+  System.Classes, uCRUD_Interno;
+
+type
+  TConfiguracao = class (Tpersistent)
+  private
+    function GetFBanco: string;
+    function GetFIdioma: string;
+    function GetFPorta: string;
+    function GetFProtocolo: string;
+    function GetFSenha: string;
+    function GetFServidor: string;
+    function GetFTema: string;
+    function GetFUsuario: string;
+    procedure SetFBanco(const Value: string);
+    procedure SetFIdioma(const Value: string);
+    procedure SetFPorta(const Value: string);
+    procedure SetFProtocolo(const Value: string);
+    procedure SetFSenha(const Value: string);
+    procedure SetFServidor(const Value: string);
+    procedure SetFTema(const Value: string);
+    procedure SetFUsuario(const Value: string);
+
+protected
+  FSenha: string;
+  FUsuario: string;
+  FBanco: string;
+  FPorta: string;
+  FServidor: string;
+  FProtocolo: string;
+  FIdioma: string;
+  FTema: string;
+
+public
+  property Senha: string read GetFSenha write SetFSenha;
+  property Usuario: string read GetFUsuario write SetFUsuario;
+  property Banco: string read GetFBanco write SetFBanco;
+  property Porta: string read GetFPorta write SetFPorta;
+  property Servidor: string read GetFServidor write SetFServidor;
+  property Protocolo: string read GetFProtocolo write SetFProtocolo;
+  property Idioma: string read GetFIdioma write SetFIdioma;
+  property Tema: string read GetFTema write SetFTema;
+  end;
+
+implementation
+
+{ TConfiguracao }
+
+function TConfiguracao.GetFBanco: string;
+begin
+  if FBanco = '' then
+    Result := TCRUD_Interno<TConfiguracao>.SelectSimples('Base')
+  else
+    Result := FBanco;
+end;
+
+function TConfiguracao.GetFIdioma: string;
+begin
+  if FIdioma = '' then
+    Result := TCRUD_Interno<TConfiguracao>.SelectSimples('Base')
+  else
+    Result := FIdioma;
+end;
+
+function TConfiguracao.GetFPorta: string;
+begin
+  if FPorta = '' then
+    Result := TCRUD_Interno<TConfiguracao>.SelectSimples('Base')
+  else
+    Result := FPorta;
+end;
+
+function TConfiguracao.GetFProtocolo: string;
+begin
+  if FProtocolo = '' then
+    Result := TCRUD_Interno<TConfiguracao>.SelectSimples('Base')
+  else
+    Result := FProtocolo;
+end;
+
+function TConfiguracao.GetFSenha: string;
+begin
+  if FSenha = '' then
+    Result := TCRUD_Interno<TConfiguracao>.SelectSimples('Base')
+  else
+    Result := FSenha;
+end;
+
+function TConfiguracao.GetFServidor: string;
+begin
+  if FServidor = '' then
+    Result := TCRUD_Interno<TConfiguracao>.SelectSimples('Base')
+  else
+    Result := FServidor;
+end;
+
+function TConfiguracao.GetFTema: string;
+begin
+  if FTema = '' then
+    Result := TCRUD_Interno<TConfiguracao>.SelectSimples('Base')
+  else
+    Result := FTema;
+end;
+
+function TConfiguracao.GetFUsuario: string;
+begin
+  if FUsuario = '' then
+    Result := TCRUD_Interno<TConfiguracao>.SelectSimples('Base')
+  else
+    Result := FUsuario;
+end;
+
+procedure TConfiguracao.SetFBanco(const Value: string);
+begin
+  FBanco := Value;
+end;
+
+procedure TConfiguracao.SetFIdioma(const Value: string);
+begin
+  FIdioma := Value;
+end;
+
+procedure TConfiguracao.SetFPorta(const Value: string);
+begin
+  FPorta := Value;
+end;
+
+procedure TConfiguracao.SetFProtocolo(const Value: string);
+begin
+  FProtocolo := Value;
+end;
+
+procedure TConfiguracao.SetFSenha(const Value: string);
+begin
+  FSenha := Value;
+end;
+
+procedure TConfiguracao.SetFServidor(const Value: string);
+begin
+  FServidor := Value;
+end;
+
+procedure TConfiguracao.SetFTema(const Value: string);
+begin
+  FTema := Value;
+end;
+
+procedure TConfiguracao.SetFUsuario(const Value: string);
+begin
+  FUsuario := Value;
+end;
+
+end.

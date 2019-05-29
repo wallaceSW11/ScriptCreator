@@ -1,0 +1,1402 @@
+unit uPrincipal;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, uTabela, uTabelaDAO, System.Generics.Collections,
+  Vcl.Menus, Vcl.ComCtrls, Vcl.Buttons, Vcl.ExtCtrls, ufrmPesquisaTabela, System.StrUtils,
+  uColuna, uColunaDAO, ufrmPesquisaColuna, Data.DB, Datasnap.DBClient,
+  Vcl.CheckLst, Vcl.Imaging.pngimage, ufrmConfiguracao, uConfiguracao, uConfiguracaoDAO, uClasseSpeedButton;
+
+
+type
+  TCamposMarcadosParaExibicao = class
+   public
+    Nome: String;
+    CamposMarcados : array of Boolean;
+
+  end;
+
+type
+  TfrmPrincipal = class(TForm)
+    cbJoinA1: TComboBox;
+    cbColunaB1: TComboBox;
+    cbColunaA1: TComboBox;
+    cbTabelaA1: TComboBox;
+    cbTabelaB1: TComboBox;
+    cbTabelaC1: TComboBox;
+    cbColunaC1: TComboBox;
+    edtValorC1: TEdit;
+    cbOperadorC1: TComboBox;
+    edtApelidoA1: TEdit;
+    edtApelidoB1: TEdit;
+    sbPrincipal: TScrollBox;
+    lblTabela1: TLabel;
+    lblApelido1: TLabel;
+    lblColunaJoin: TLabel;
+    lblJuncao1: TLabel;
+    lblTabela2: TLabel;
+    lblApelido2: TLabel;
+    lblColunaJoin2: TLabel;
+    sbFiltro: TScrollBox;
+    edtApelidoC1: TEdit;
+    lblTabelaFiltro: TLabel;
+    lblApelidoFiltro: TLabel;
+    lblColunaFiltro: TLabel;
+    lblOperadorFiltro: TLabel;
+    lblValorFiltro: TLabel;
+    cbJuncaoC1: TComboBox;
+    lblJuncaoFiltro: TLabel;
+    rgTipoScript: TRadioGroup;
+    btnDelTabelasA1: TSpeedButton;
+    btnDelFiltroC1: TSpeedButton;
+    mmScript: TMemo;
+    pnlJoin: TPanel;
+    pnlFiltro: TPanel;
+    lblAviso: TLabel;
+    cbColunasVisiveisA1: TComboBox;
+    lblColunasVisiveis1: TLabel;
+    cbColunasVisiveisB1: TComboBox;
+    lblColunasVisiveis2: TLabel;
+    btnReset: TSpeedButton;
+    imgBra: TImage;
+    imgEUA: TImage;
+    btnConfiguracao: TSpeedButton;
+    btn1: TButton;
+    procedure FormShow(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure cbTabelaA1CloseUp(Sender: TObject);
+    procedure cbTabelaB1CloseUp(Sender: TObject);
+    procedure cbTabela9CloseUp(Sender: TObject);
+
+    procedure FormMouseWheelDown(Sender: TObject; Shift: TShiftState;
+      MousePos: TPoint; var Handled: Boolean);
+    procedure PreencherListaColuna(Sender: TObject);
+    procedure btnAddTabelasA1Click(Sender: TObject);
+    procedure ClickBotaoDel(Sender: TObject);
+    procedure cbColunaB1Change(Sender: TObject);
+    procedure OnChangeColuna(Sender: Tobject);
+    procedure cbColunaB1CloseUp(Sender: TObject);
+    procedure cbJuncaoC1CloseUp(Sender: TObject);
+    procedure mmScriptClick(Sender: TObject);
+    procedure mmScriptMouseLeave(Sender: TObject);
+    procedure edtValorC1Exit(Sender: TObject);
+    procedure SelecionarCampoVisivel(Sender: TObject);
+
+    procedure DesenharCheckBoxComboBox(Control: TWinControl; Index: Integer; Rect: TRect;
+      State: TOwnerDrawState);
+    procedure btnResetClick(Sender: TObject);
+    procedure FormKeyPress(Sender: TObject; var Key: Char);
+    procedure imgEUAClick(Sender: TObject);
+    procedure imgBraClick(Sender: TObject);
+    procedure btnConfiguracaoClick(Sender: TObject);
+    procedure sbPrincipalMouseWheelUp(Sender: TObject; Shift: TShiftState; MousePos: TPoint; var Handled: Boolean);
+    procedure sbPrincipalMouseWheelDown(Sender: TObject; Shift: TShiftState; MousePos: TPoint; var Handled: Boolean);
+    procedure sbFiltroMouseWheelDown(Sender: TObject; Shift: TShiftState; MousePos: TPoint; var Handled: Boolean);
+    procedure sbFiltroMouseWheelUp(Sender: TObject; Shift: TShiftState; MousePos: TPoint; var Handled: Boolean);
+    procedure btn1Click(Sender: TObject);
+    procedure edtApelidoA1Exit(Sender: TObject);
+    procedure PreencherListaColunaApelido(Sender: TObject);
+
+  private
+    FListaTabelas: TObjectList<TTabela>;
+    FListaColunas: TObjectList<TColuna>;
+    FLinhaTabelas: Integer;
+    FLinhaFiltro: Integer;
+    FSchema: string;
+    FListaArrayMarcados: TList<TCamposMarcadosParaExibicao>;
+    FCamposMarcadosParaExibicao : TCamposMarcadosParaExibicao;
+
+    function IsUpperCase(Value: string): Boolean;
+    function CriarApelido(pTexto: string): string;
+
+    procedure GerarScript;
+    procedure CarregarListaTabelas;
+
+    procedure CriarCamposTabela();
+    procedure CriarComboTabela(pColuna: string);
+    function RetornarTOP(pColuna: string): Integer;
+    function RetornarCompontentLeft(pComponent: string = 'A'):TComponent;
+    procedure CriarComboColuna(pColuna: string);
+    procedure CriarCampoApelido(pColuna: string);
+    procedure CriarJoin;
+    function RetornarBotaoOrigem(): TSpeedButton;
+//    procedure CriarBotaoDelTabelas(pColuna: string);
+    procedure Removercampos;
+    procedure OnChangeTabelas(Sender: Tobject);
+    procedure CriarCamposFiltro;
+    procedure CriarComplementoFiltro;
+    function RetornarBox(pColuna: string): TScrollBox;
+    function RetornarLinha(pColuna: string): Integer;
+    function RetornarLinhaObjeto(pObjeto: TObject): string;
+    procedure CriarComboOperador(pColuna: string);
+    procedure CriarComboJuncao(pColuna: string);
+    procedure CriarCampoValor(pColuna: string);
+//    procedure CriarBotaoDelFiltro(pColuna: string);
+    function RetornarBotaoOrigemFiltro: TSpeedButton;
+    procedure ClickBotaoDelFiltro(Sender: TObject);
+    procedure RemoverCamposFiltro;
+    procedure OnChangeJuncao(Sender: Tobject);
+    function RetornarTOPFiltro: Integer;
+    procedure AddMemoColunas();
+    procedure AddMemoTabelaJoin();
+    procedure AddMemoTabelasJoin(pLinhas, pEspaco: Integer);
+    procedure RemoverUltimaVirgura;
+    procedure AddMemoFiltro;
+    procedure AddMemoFiltros;
+    procedure MarcarTodos(pCampo: TObject;  pSim: Boolean = True);
+    function ValidarCampos():Boolean;
+    procedure CriarComboColunasVisiveis(pColuna: string);
+    procedure CriarColunasVisiveis(pNome: string);
+    procedure AoSairCampoValor(Sender: TObject);
+    procedure ResetarCampos;
+    procedure ZerarCampos;
+    procedure EscritaPortugues;
+    procedure EscritaIngles;
+    procedure CarregarConfiguracoes;
+    procedure Inicializar;
+    function RetornarColuna(pObjeto: Tobject): string;
+    procedure InserirCamposConfiguracaoTabela;
+    procedure ScrollUp(pScrollBox: TScrollbox);
+    procedure ScrollDown(PScrollBox: TScrollBox);
+    function RetornarComponente<T:class>(pNomeComponente:string; pNumeroLinha: integer=1): T;
+    procedure CriarBotaoDelete(pColuna: string);
+    procedure CriarBotao;
+    { Private declarations }
+  public
+    { Public declarations }
+
+  end;
+
+var
+  frmPrincipal: TfrmPrincipal;
+
+implementation
+
+{$R *.dfm}
+
+procedure TfrmPrincipal.FormCreate(Sender: TObject);
+begin
+  FListaTabelas := TObjectList<TTabela>.Create;
+  FListaColunas := TObjectList<TColuna>.Create;
+  FLinhaTabelas := 1;
+  FLinhaFiltro := 1;
+  FListaArrayMarcados := TList<TCamposMarcadosParaExibicao>.Create;
+end;
+
+
+
+procedure TfrmPrincipal.FormKeyPress(Sender: TObject; var Key: Char);
+begin
+  if ((key = #13) and  (not(ActiveControl.ClassType = TMemo))) then
+    begin
+      Key:= #0;
+      Perform(Wm_NextDlgCtl,0,0);
+    end;
+end;
+
+procedure TfrmPrincipal.FormMouseWheelDown(Sender: TObject; Shift: TShiftState;
+  MousePos: TPoint; var Handled: Boolean);
+begin
+  if sbPrincipal.Focused then
+    ScrollDown(sbPrincipal);
+
+  if sbFiltro.Focused then
+    ScrollDown(sbFiltro);
+end;
+
+procedure TfrmPrincipal.ScrollUp(pScrollBox: TScrollbox);
+begin
+   with pScrollBox.VertScrollBar Do
+   begin
+    if (Position >= Increment) Then
+      Position := Position - Increment
+    else
+      Position := 0;
+   end;
+end;
+
+procedure TfrmPrincipal.ScrollDown(PScrollBox: TScrollBox);
+begin
+  with PScrollBox.VertScrollBar Do
+  begin
+    if (Position <= (Range - Increment)) Then
+      Position := Position + Increment
+    else
+      Position := Range - Increment;
+  end;
+end;
+
+
+procedure TfrmPrincipal.FormShow(Sender: TObject);
+begin
+  Inicializar;
+end;
+
+procedure TfrmPrincipal.Inicializar;
+begin
+  ResetarCampos();
+  CarregarConfiguracoes();
+  CarregarListaTabelas();
+  btnDelTabelasA1.Visible := False;
+  FListaArrayMarcados.Clear();
+  CriarColunasVisiveis('cbColunasVisiveisA1');
+  CriarColunasVisiveis('cbColunasVisiveisB1');
+end;
+
+
+procedure TfrmPrincipal.CarregarConfiguracoes();
+var
+  lConfig : Tconfiguracao;
+begin
+  lConfig := TConfiguracao.Create;
+
+  try
+    EscritaIngles();
+
+    if (lConfig.Banco = EmptyStr) then
+      InserirCamposConfiguracaoTabela;
+
+    if (lConfig.Idioma = 'Português') then
+      EscritaPortugues;
+
+    FSchema := lConfig.Schema;
+  finally
+    lConfig.Free();
+  end;
+
+end;
+
+procedure TfrmPrincipal.InserirCamposConfiguracaoTabela;
+var
+  lTela: TfrmConfiguracao;
+begin
+  TConfiguracaoDAO.InserirCamposTabela;
+  lTela := TfrmConfiguracao.Create(nil);
+
+  try
+    lTela.ShowModal;
+
+    if (lTela.ModalResult = mrOk) then
+      Inicializar
+    else
+      Abort;
+
+  finally
+    lTela.Free;
+  end;
+end;
+
+
+procedure TfrmPrincipal.CriarColunasVisiveis(pNome: string);
+begin
+  FCamposMarcadosParaExibicao := TCamposMarcadosParaExibicao.Create();
+  FCamposMarcadosParaExibicao.Nome := pNome;
+  FCamposMarcadosParaExibicao.CamposMarcados := [False];
+  FListaArrayMarcados.Add(FCamposMarcadosParaExibicao);
+end;
+
+procedure TfrmPrincipal.CarregarListaTabelas();
+var
+  I: Integer;
+begin
+  FListaTabelas :=  TTabelaDAO.RetornarTabelas(FSchema);
+  cbTabelaA1.Clear;
+  cbTabelaB1.Clear;
+  cbTabelaC1.Clear;
+
+  if FListaTabelas <> nil then
+  begin
+    for I := 0 to FListaTabelas.Count-1 do
+      cbTabelaA1.Items.Add(FListaTabelas.Items[i].Nome);
+
+    cbTabelaB1.Items := cbTabelaA1.Items;
+    cbTabelaC1.Items := cbTabelaA1.Items;
+  end;
+
+  FListaColunas := TColunaDAO.RetornarTodasColunas(FSchema);
+end;
+
+
+function TfrmPrincipal.CriarApelido(pTexto: string):string;
+var
+  I: Integer;
+  lLetra, lApelido: string;
+begin
+  lApelido := '';
+  pTexto := Trim(pTexto);
+
+  for I := 1 to Length(pTexto) do
+  begin
+    lLetra := Copy(pTexto, i, 1);
+
+    if IsUpperCase(lLetra) then
+     lApelido := lApelido + lLetra;
+  end;
+
+  if lApelido.IsEmpty then
+    lApelido := UpperCase(Copy(pTexto, 1, 1));
+
+  Result := lApelido;
+end;
+
+function TfrmPrincipal.IsUpperCase(Value: string): Boolean;
+begin
+  Result := Value = AnsiUpperCase(Value) ;
+end;
+
+
+procedure TfrmPrincipal.mmScriptClick(Sender: TObject);
+begin
+  mmScript.SelectAll;
+  mmScript.copytoclipboard;
+  mmScript.SelStart := 0;
+  lblAviso.Caption := 'Texto Copiado!';
+end;
+
+procedure TfrmPrincipal.mmScriptMouseLeave(Sender: TObject);
+begin
+  lblAviso.Caption := 'Aviso:';
+end;
+
+
+procedure TfrmPrincipal.btn1Click(Sender: TObject);
+begin
+  CriarBotao;
+end;
+
+procedure TfrmPrincipal.btnAddTabelasA1Click(Sender: TObject);
+begin
+  CriarCamposTabela();
+end;
+
+
+
+procedure TfrmPrincipal.btnConfiguracaoClick(Sender: TObject);
+var
+  lTela: TfrmConfiguracao;
+begin
+  lTela := TfrmConfiguracao.Create(self);
+
+  try
+    lTela.ShowModal;
+
+    if lTela.ModalResult = mrOk then
+      Inicializar;
+
+  finally
+    lTela.Free;
+  end;
+end;
+
+procedure TfrmPrincipal.CriarCamposTabela();
+var
+  lCampo: TComboBox;
+begin
+  lCampo := RetornarComponente<TComboBox>('CbTabelaA',FLinhaTabelas);
+
+  if lCampo.Text <> EmptyStr then
+  begin
+    CriarComboTabela('A');
+    CriarComboColunasVisiveis('A');
+    CriarJoin;
+    CriarComboTabela('B');
+    CriarComboColunasVisiveis('B');
+    CriarBotaoDelete('A');
+
+    FLinhaTabelas := FLinhaTabelas + 1;
+    sbPrincipal.VertScrollBar.Position := sbPrincipal.VertScrollBar.Range;
+  end;
+  GerarScript;
+end;
+
+
+procedure TfrmPrincipal.CriarCamposFiltro();
+var
+  lCampo: TComboBox;
+begin
+  lCampo := RetornarComponente<TComboBox>('CbJuncaoC',FlinhaFiltro);
+
+  if lCampo.Text <> EmptyStr then
+  begin
+    CriarComboTabela('C');
+    FLinhaFiltro := FLinhaFiltro + 1;
+    sbFiltro.VertScrollBar.Position := sbFiltro.VertScrollBar.Range;
+  end;
+end;
+
+function TfrmPrincipal.RetornarComponente<T>(pNomeComponente:string; pNumeroLinha: integer=1): T;
+begin
+  Result := T(FindComponent(pNomeComponente+IntToStr(pNumeroLinha)));
+end;
+
+
+procedure TfrmPrincipal.CriarCampoApelido(pColuna: string);
+var
+  lEdit: TEdit;
+begin
+  lEdit := TEdit.Create(Self);
+  lEdit.Parent := RetornarBox(pColuna);
+  lEdit.Left := RetornarComponente<TEdit>('edtApelido'+pColuna).Left;
+  lEdit.Top := RetornarTOP(pColuna);
+  lEdit.Width := edtApelidoA1.Width;
+  lEdit.Name := 'edtApelido' + pColuna + IntToStr(RetornarLinha(pColuna)+1);
+  lEdit.Text := '';
+
+  lEdit.OnExit := PreencherListaColunaApelido;
+end;
+
+
+procedure TfrmPrincipal.CriarComboColuna(pColuna: string);
+var
+  lcp : TComboBox;
+begin
+  lcp := TComboBox.Create(Self);
+  lcp.Parent := RetornarBox(pColuna);
+  lcp.Left := Retornarcomponente<TComboBox>('cbColuna'+pColuna).Left;
+  lcp.Top := RetornarTOP(pColuna);
+  lcp.Width := cbColunaA1.Width;
+  lcp.Style := cbColunaA1.Style;
+  lcp.Items := cbColunaA1.Items;
+  lcp.Name := 'cbColuna' + pColuna + IntToStr(RetornarLinha(pColuna)+1);
+  lcp.Text := '';
+
+  if pColuna = 'B' then
+  begin
+    lcp.OnCloseUp := OnChangeColuna;
+    lcp.OnChange := OnChangeColuna;
+  end;
+end;
+
+
+procedure TfrmPrincipal.OnChangeColuna(Sender: Tobject);
+begin
+  CriarCamposTabela();
+end;
+
+
+procedure TfrmPrincipal.CriarJoin();
+var
+  lcp : TComboBox;
+begin
+  lcp := TComboBox.Create(Self);
+  lcp.Parent := sbPrincipal;
+  lcp.Left := Retornarcomponente<TComboBox>('cbJoinA').Left;
+  lcp.Top := RetornarTOP('A');
+  lcp.Width := cbJoinA1.Width;
+  lcp.Style := cbJoinA1.Style;
+  lcp.Items := cbJoinA1.Items;
+  lcp.Name := 'cbJoinA' + IntToStr(FLinhaTabelas+1);
+  lcp.Text := '';
+end;
+
+procedure TfrmPrincipal.edtApelidoA1Exit(Sender: TObject);
+begin
+  PreencherListaColunaApelido(Sender);
+end;
+
+procedure TfrmPrincipal.edtValorC1Exit(Sender: TObject);
+begin
+  GerarScript;
+end;
+
+procedure TfrmPrincipal.AoSairCampoValor(Sender: TObject);
+begin
+  GerarScript;
+end;
+
+procedure TfrmPrincipal.CriarComboTabela(pColuna: string);
+var
+  lcp : TComboBox;
+begin
+  lcp := TComboBox.Create(Self);
+  lcp.Parent := RetornarBox(pColuna);
+  lcp.Left := RetornarComponente<TComboBox>('CbTabela'+PColuna).left;
+  lcp.Top := RetornarTOP(pColuna);
+
+  if pColuna = 'C' then
+    lcp.Top := RetornarTOPFiltro();
+
+  lcp.Width := cbTabelaA1.Width;
+  lcp.Style := cbTabelaA1.Style;
+  lcp.Items := cbTabelaA1.Items;
+  lcp.Name := 'cbTabela' + pColuna + IntToStr(RetornarLinha(pColuna)+1);
+  lcp.Text := '';
+  lcp.OnChange := OnChangeTabelas;
+
+  CriarCampoApelido(pColuna);
+  CriarComboColuna(pColuna);
+
+  if pColuna = 'C' then
+    CriarComplementoFiltro;
+end;
+
+
+procedure TfrmPrincipal.CriarComboColunasVisiveis(pColuna: string);
+var
+  lcp : TComboBox;
+begin
+  lcp := TComboBox.Create(Self);
+  lcp.Parent := RetornarBox(pColuna);
+  lcp.Left := RetornarComponente<TComboBox>('cbColunasVisiveis'+pColuna).Left;
+  lcp.Top := RetornarTOP(pColuna);
+  lcp.Width := cbColunasVisiveisA1.Width;
+  lcp.Style := cbColunasVisiveisA1.Style;
+  lcp.ItemHeight := cbColunasVisiveisA1.ItemHeight;
+  lcp.Name := 'cbColunasVisiveis' + pColuna + IntToStr(RetornarLinha(pColuna)+1);
+  lcp.Text := '';
+  lcp.OnDrawItem := DesenharCheckBoxComboBox;
+  lcp.OnSelect := SelecionarCampoVisivel;
+  CriarColunasVisiveis(lcp.Name);
+end;
+
+
+procedure TfrmPrincipal.CriarComboOperador(pColuna: string);
+var
+  lcp : TComboBox;
+begin
+  lcp := TComboBox.Create(Self);
+  lcp.Parent := RetornarBox(pColuna);
+  lcp.Left := RetornarComponente<TComboBox>('cbOperador'+pColuna).Left;
+  lcp.Top := RetornarTOPFiltro();
+  lcp.Width := cbOperadorC1.Width;
+  lcp.Style := cbOperadorC1.Style;
+  lcp.Items := cbOperadorC1.Items;
+  lcp.Name := 'cbOperador' + pColuna + IntToStr(RetornarLinha(pColuna)+1);
+  lcp.Text := '';
+end;
+
+procedure TfrmPrincipal.CriarComboJuncao(pColuna: string);
+var
+  lcp : TComboBox;
+begin
+  lcp := TComboBox.Create(Self);
+  lcp.Parent := RetornarBox(pColuna);
+  lcp.Left := RetornarComponente<TComboBox>('cbJuncao'+pColuna).Left;
+  lcp.Top := RetornarTOPFiltro();
+  lcp.Width := cbJuncaoC1.Width;
+  lcp.Style := cbJuncaoC1.Style;
+  lcp.Items := cbJuncaoC1.Items;
+  lcp.Name := 'cbJuncao' + pColuna + IntToStr(RetornarLinha(pColuna)+1);
+  lcp.Text := '';
+  lcp.OnChange := OnChangeJuncao;
+end;
+
+
+procedure TfrmPrincipal.CriarCampoValor(pColuna: string);
+var
+  lEdit: TEdit;
+begin
+  lEdit := TEdit.Create(Self);
+  lEdit.Parent := RetornarBox(pColuna);
+  lEdit.Left := TEdit(RetornarCompontentLeft('edtValor'+pColuna)).Left;
+  lEdit.Top := RetornarTOPFiltro();
+  lEdit.Width := edtValorC1.Width;
+  lEdit.Name := 'edtValor' + pColuna + IntToStr(RetornarLinha(pColuna)+1);
+  lEdit.Text := '';
+  lEdit.OnExit := AoSairCampoValor;
+end;
+
+
+function TfrmPrincipal.RetornarBox(pColuna: string):TScrollBox;
+begin
+  Result := sbPrincipal;
+
+  if pColuna = 'C' then
+    Result :=  sbFiltro;
+end;
+
+function TfrmPrincipal.RetornarLinha(pColuna: string):Integer;
+begin
+  Result := FLinhaTabelas;
+
+  if pColuna = 'C' then
+    Result :=  FLinhaFiltro;
+end;
+
+
+procedure TfrmPrincipal.CriarComplementoFiltro;
+begin
+  CriarComboOperador('C');
+  CriarCampoValor('C');
+  CriarComboJuncao('C');
+  CriarBotaoDelete('C');
+end;
+
+procedure TfrmPrincipal.OnChangeTabelas(Sender: Tobject);
+begin
+  PreencherListaColuna(Sender);
+end;
+
+procedure TfrmPrincipal.OnChangeJuncao(Sender: Tobject);
+begin
+  CriarCamposFiltro;
+
+  if TComboBox(Sender).ItemIndex > 0 then
+    GerarScript;
+end;
+
+procedure TfrmPrincipal.CriarBotao;
+var
+  lBtn: TSpeedButton;
+begin
+  lBtn := TClasseSpeedButton.Create('btnDelTabelas','A','2');
+
+  //lBtn.Show;
+
+end;
+
+
+procedure TfrmPrincipal.CriarBotaoDelete(pColuna: string);
+var
+  lBtn: TSpeedButton;
+  lNome: string;
+  lLinha: String;
+begin
+  lBtn := TSpeedButton.Create(self);
+
+  if pColuna = 'C' then
+    begin
+      lNome := 'btnDelFiltro';
+      lLinha := IntToStr(FLinhaFiltro+1);
+      lBtn.OnClick := ClickBotaoDelFiltro;
+    end
+  else
+    begin
+      lNome := 'btnDelTabelas';
+      lLinha := IntToStr(FLinhaTabelas+1);
+      lBtn.OnClick := ClickBotaoDel;
+    end;
+
+  lBtn.Parent := RetornarBox(pColuna);
+  lBtn.Flat := True;
+
+  lBtn.Left := RetornarComponente<TSpeedButton>(lNome+pColuna).Left;
+  lBtn.Top := RetornarTOP(pColuna);
+  lBtn.Width := btnDelTabelasA1.Width;
+
+  lBtn.Name := lNome + pColuna + lLinha;
+  lBtn.Caption := 'x';
+
+  RetornarComponente<TSpeedButton>(lNome+pColuna,StrToInt(lLinha)-1).Visible := False;
+end;
+
+
+//procedure TfrmPrincipal.CriarBotaoDelete(pColuna: string);
+//var
+//  lBtn: TSpeedButton;
+//  lNome: string;
+//  lTamanhoComponente: TSpeedButton;
+//  lLinha: String;
+//begin
+//
+//  lBtn := TSpeedButton.Create(self);
+//
+//  if pColuna = 'C' then
+//    begin
+//      lNome := 'btnDelFiltro';
+//      lLinha := IntToStr(FLinhaFiltro+1);
+//      lBtn.OnClick := ClickBotaoDelFiltro;
+//    end
+//  else
+//    begin
+//      lNome := 'btnDelTabelas';
+//      lLinha := IntToStr(FLinhaTabelas+1);
+//      lBtn.OnClick := ClickBotaoDel;
+//    end;
+//
+//  lBtn.Parent := RetornarBox(pColuna);
+//  lBtn.Flat := True;
+//
+//  lBtn.Left := RetornarComponente<TSpeedButton>(lNome+pColuna).Left;
+//  lBtn.Top := RetornarTOP(pColuna);
+//  lBtn.Width := btnDelTabelasA1.Width;
+//
+//  lBtn.Name := lNome + pColuna + lLinha;
+//  lBtn.Caption := 'x';
+//
+//  //RetornarBotaoOrigem().Visible := False;
+//end;
+
+//procedure TfrmPrincipal.CriarBotaoDelFiltro(pColuna: string);
+//var
+//  lBtn: TSpeedButton;
+//begin
+//  lBtn := TSpeedButton.Create(self);
+//  lBtn.Parent := RetornarBox(pColuna);
+//  lBtn.Left := TSpeedButton(RetornarCompontentLeft('btnDelFiltro'+pColuna)).Left;
+//  lBtn.Top := RetornarTOPFiltro();
+//  lBtn.Width := btnDelTabelasA1.Width;
+//  lBtn.Name := 'btnDelFiltro' + pColuna + IntToStr(RetornarLinha(pColuna)+1);
+//  lBtn.Caption := 'x';
+//  lBtn.Flat := True;
+//  lBtn.OnClick := ClickBotaoDelFiltro;
+//  RetornarBotaoOrigemFiltro().Visible := False;
+//end;
+
+
+
+//procedure TfrmPrincipal.CriarBotaoDelTabelas(pColuna: string);
+//begin
+//
+//end;
+
+//procedure TfrmPrincipal.CriarBotaoDelTabelas(pColuna: string);
+//var
+//  lBtn: TSpeedButton;
+//begin
+//  lBtn := TSpeedButton.Create(self);
+//  lBtn.Parent := RetornarBox(pColuna);
+//  lBtn.Left := TSpeedButton(RetornarCompontentLeft('btnDelTabelas'+pColuna)).Left;
+//  lBtn.Top := RetornarTOP(pColuna);
+//  lBtn.Width := btnDelTabelasA1.Width;
+//  lBtn.Name := 'btnDelTabelas' + pColuna + IntToStr(FLinhaTabelas+1);
+//  lBtn.Caption := 'x';
+//  lBtn.Flat := True;
+//  lBtn.OnClick := ClickBotaoDel;
+//  RetornarBotaoOrigem().Visible := False;
+//end;
+//
+//
+//procedure TfrmPrincipal.CriarBotaoDelFiltro(pColuna: string);
+//var
+//  lBtn: TSpeedButton;
+//begin
+//  lBtn := TSpeedButton.Create(self);
+//  lBtn.Parent := RetornarBox(pColuna);
+//  lBtn.Left := TSpeedButton(RetornarCompontentLeft('btnDelFiltro'+pColuna)).Left;
+//  lBtn.Top := RetornarTOPFiltro();
+//  lBtn.Width := btnDelTabelasA1.Width;
+//  lBtn.Name := 'btnDelFiltro' + pColuna + IntToStr(RetornarLinha(pColuna)+1);
+//  lBtn.Caption := 'x';
+//  lBtn.Flat := True;
+//  lBtn.OnClick := ClickBotaoDelFiltro;
+//  RetornarBotaoOrigemFiltro().Visible := False;
+//end;
+
+
+procedure TfrmPrincipal.ClickBotaoDel(Sender: TObject);
+begin
+  RemoverCampos;
+end;
+
+procedure TfrmPrincipal.ClickBotaoDelFiltro(Sender: TObject);
+begin
+  RemoverCamposFiltro;
+end;
+
+procedure TfrmPrincipal.Removercampos;
+begin
+  TComboBox(FindComponent('cbTabelaA'+IntToStr(FLinhaTabelas))).Free;
+  TEdit(FindComponent('edtApelidoA'+IntToStr(FLinhaTabelas))).Free;
+  TComboBox(FindComponent('cbTabelaB'+IntToStr(FLinhaTabelas))).Free;
+  TComboBox(FindComponent('cbColunaA'+IntToStr(FLinhaTabelas))).Free;
+  TComboBox(FindComponent('cbColunasVisiveisA'+IntToStr(FLinhaTabelas))).Free;
+  TComboBox(FindComponent('cbColunasVisiveisB'+IntToStr(FLinhaTabelas))).Free;
+  TComboBox(FindComponent('cbJoinA'+IntToStr(FLinhaTabelas))).Free;
+  TComboBox(FindComponent('cbColunaB'+IntToStr(FLinhaTabelas))).Free;
+  TEdit(FindComponent('edtApelidoB'+IntToStr(FLinhaTabelas))).Free;
+  TComboBox(FindComponent('cbTabelaA'+IntToStr(FLinhaTabelas))).Free;
+
+  RetornarBotaoOrigem().Free;
+  FLinhaTabelas := FLinhaTabelas - 1;
+  RetornarBotaoOrigem().Visible := FLinhaTabelas > 1;
+
+  GerarScript;
+end;
+
+
+procedure TfrmPrincipal.RemoverCamposFiltro;
+begin
+  TComboBox(FindComponent('cbTabelaC'+IntToStr(FLinhaFiltro))).Free;
+  TEdit(FindComponent('edtApelidoC'+IntToStr(FLinhaFiltro))).Free;
+  TComboBox(FindComponent('cbColunaC'+IntToStr(FLinhaFiltro))).Free;
+  TComboBox(FindComponent('cbOperadorC'+IntToStr(FLinhaFiltro))).Free;
+  TEdit(FindComponent('edtValorC'+IntToStr(FLinhaFiltro))).Free;
+  TComboBox(FindComponent('cbJuncaoC'+IntToStr(FLinhaFiltro))).Free;
+
+  RetornarBotaoOrigemFiltro().Free;
+  FLinhaFiltro := FLinhaFiltro - 1;
+  RetornarBotaoOrigemFiltro().Visible := FLinhaFiltro > 1;
+
+  GerarScript;
+end;
+
+
+function TfrmPrincipal.RetornarTOP(pColuna: string):Integer;
+begin
+  if pColuna = 'C' then
+  begin
+    Result := cbTabelaC1.Top + (FLinhaFiltro * 27);
+
+    if FLinhaFiltro = 1 then
+      Result := cbTabelaC1.Top + 27;
+
+    Exit;
+  end;
+
+  Result := cbTabelaA1.Top + (FLinhaTabelas * 27);
+
+  if FLinhaTabelas = 1 then
+    Result := cbTabelaA1.Top + 27;
+end;
+
+function TfrmPrincipal.RetornarTOPFiltro():Integer;
+begin
+  Result := cbTabelaA1.Top + (FLinhaFiltro * 27);
+
+  if FLinhaFiltro = 1 then
+    begin
+      Result := cbTabelaA1.Top + 27;
+    end;
+end;
+
+
+function TfrmPrincipal.RetornarCompontentLeft(pComponent: string = 'A'):TComponent;
+begin
+  Result := FindComponent(pComponent+'1');
+end;
+
+function TfrmPrincipal.RetornarBotaoOrigem():TSpeedButton;
+begin
+  Result := TSpeedButton(FindComponent('btnDelTabelasA'+IntToStr(FLinhaTabelas)));
+end;
+
+function TfrmPrincipal.RetornarBotaoOrigemFiltro():TSpeedButton;
+begin
+  Result := TSpeedButton(FindComponent('btnDelFiltroC'+IntToStr(FLinhaFiltro)));
+end;
+
+
+procedure TfrmPrincipal.btnResetClick(Sender: TObject);
+begin
+  if (Application.MessageBox('Confirmar limpar os campos','Reset', MB_YESNO + MB_ICONQUESTION) = ID_YES) then
+    ResetarCampos;
+end;
+
+procedure TfrmPrincipal.ResetarCampos;
+begin
+  while not (FLinhaTabelas = 1) do
+    Removercampos;
+
+  while not (FLinhaFiltro = 1) do
+    RemoverCamposFiltro;
+
+  mmScript.Clear;
+  rgTipoScript.ItemIndex := 0;
+
+  ZerarCampos;
+  FListaArrayMarcados.Clear;
+  CriarColunasVisiveis('cbColunasVisiveisA1');
+  CriarColunasVisiveis('cbColunasVisiveisB1');
+end;
+
+
+procedure TfrmPrincipal.ZerarCampos;
+begin
+  cbTabelaA1.ItemIndex := -1;
+  edtApelidoA1.Clear;
+  cbColunasVisiveisA1.Clear;
+  cbColunaA1.Clear;
+  cbJoinA1.ItemIndex := -1;
+
+  cbTabelaB1.ItemIndex := -1;
+  edtApelidoB1.Clear;
+  cbColunasVisiveisB1.Clear;
+  cbColunaB1.Clear;
+
+  cbTabelaC1.ItemIndex := -1;
+  edtApelidoC1.Clear;
+  cbColunaC1.Clear;
+  cbOperadorC1.ItemIndex := -1;
+  edtValorC1.Clear;
+  cbJuncaoC1.ItemIndex := -1;
+end;
+
+procedure TfrmPrincipal.GerarScript;
+begin
+  if not ValidarCampos then
+    Exit;
+
+  mmScript.Clear;
+  mmScript.Lines.Add('SELECT');
+  AddMemoColunas();
+  RemoverUltimaVirgura;
+  mmScript.Lines.Add('FROM');
+  AddMemoTabelaJoin;
+
+  if cbTabelaC1.Text <> EmptyStr then
+  begin
+    mmScript.Lines.Add('WHERE');
+    AddMemoFiltro;
+  end;
+end;
+
+procedure TfrmPrincipal.EscritaPortugues();
+begin
+  rgTipoScript.Caption := 'Tipo de script';
+
+  pnlJoin.Caption := 'Tabelas para junção (Join)';
+  pnlFiltro.Caption := 'Tabelas para filtro (Where)';
+  lblAviso.Caption := 'Aviso:';
+
+  lblTabela1.Caption := 'Tabela:';
+  lblTabela2.Caption := lblTabela1.Caption;
+  lblTabelaFiltro.Caption := lblTabela1.Caption;
+
+  lblApelido1.Caption := 'Apelido:';
+  lblApelido2.Caption := lblApelido1.Caption;
+  lblApelidoFiltro.Caption := lblApelido1.Caption;
+
+  lblColunasVisiveis1.Caption := 'Colunas visíveis:';
+  lblColunasVisiveis2.Caption := lblColunasVisiveis1.Caption;
+
+  lblColunaJoin.Caption := 'Coluna join:';
+  lblColunaJoin2.Caption := lblColunaJoin.Caption;
+
+  lblJuncao1.Caption := 'Tipo de junção:';
+  lblColunaFiltro.Caption := 'Coluna:';
+  lblOperadorFiltro.Caption := 'Operador:';
+  lblValorFiltro.Caption := 'Valor:';
+  lblJuncaoFiltro.Caption := 'Junção:';
+end;
+
+
+procedure TfrmPrincipal.imgBraClick(Sender: TObject);
+begin
+  EscritaPortugues;
+end;
+
+procedure TfrmPrincipal.EscritaIngles();
+begin
+  rgTipoScript.Caption := 'Type of script';
+
+  pnlJoin.Caption := 'Joining tables (Join)';
+  pnlFiltro.Caption := 'Filter tables (Where)';
+  lblAviso.Caption := 'Warning:';
+
+  lblTabela1.Caption := 'Table:';
+  lblTabela2.Caption := lblTabela1.Caption;
+  lblTabelaFiltro.Caption := lblTabela1.Caption;
+
+  lblApelido1.Caption := 'Nick Name:';
+  lblApelido2.Caption := lblApelido1.Caption;
+  lblApelidoFiltro.Caption := lblApelido1.Caption;
+
+  lblColunasVisiveis1.Caption := 'Visible Columns:';
+  lblColunasVisiveis2.Caption := lblColunasVisiveis1.Caption;
+
+  lblColunaJoin.Caption := 'Junction column:';
+  lblColunaJoin2.Caption := lblColunaJoin.Caption;
+  lblJuncao1.Caption := 'Type of junction:';
+
+  lblColunaFiltro.Caption := 'Column:';
+  lblOperadorFiltro.Caption := 'Operator:';
+  lblValorFiltro.Caption := 'Value:';
+  lblJuncaoFiltro.Caption := 'Junction';
+end;
+
+procedure TfrmPrincipal.imgEUAClick(Sender: TObject);
+begin
+  EscritaIngles;
+end;
+
+procedure TfrmPrincipal.AddMemoFiltro;
+var
+  lValor, lJuncao: string;
+begin
+  case cbOperadorC1.ItemIndex of
+    0: lValor := QuotedStr(edtValorC1.Text);
+    1: lValor := ' ''%' + edtValorC1.Text + '%'' ';
+  end;
+
+  if cbJuncaoC1.ItemIndex > 0 then
+      lJuncao := cbJuncaoC1.Text;
+
+  mmScript.Lines.Add('  (' + edtApelidoC1.Text + '.' + cbColunaC1.Text  +
+                     ' ' +cbOperadorC1.Text + lValor + ') ' + lJuncao);
+
+  if FLinhaFiltro > 1 then
+    AddMemoFiltros;
+end;
+
+
+function TfrmPrincipal.ValidarCampos: Boolean;
+begin
+  Result := False;
+
+  if cbTabelaA1.Text = EmptyStr then
+  begin
+    MessageBox(Handle, 'Por favor informe a primeira tabela!', 'Atenção!', MB_OK + MB_ICONINFORMATION);
+    cbTabelaA1.SetFocus;
+    exit;
+  end;
+
+  if cbColunaA1.Text = EmptyStr then
+  begin
+    MessageBox(Handle, 'Por favor informe a primeira coluna!', 'Atenção!', MB_OK + MB_ICONINFORMATION);
+    cbColunaA1.SetFocus;
+    Exit;
+  end;
+
+  if cbTabelaB1.Text = EmptyStr then
+  begin
+    MessageBox(Handle, 'Por favor informe a segunda tabela!', 'Atenção!', MB_OK + MB_ICONINFORMATION);
+    cbTabelaB1.SetFocus;
+    Exit;
+  end;
+
+
+  if cbColunaB1.Text = EmptyStr then
+  begin
+    MessageBox(Handle, 'Por favor informe a segunda coluna!', 'Atenção!', MB_OK + MB_ICONINFORMATION);
+    cbColunaB1.SetFocus;
+    Exit;
+  end;
+
+  Result := True;
+end;
+
+
+procedure TfrmPrincipal.AddMemoFiltros;
+var
+  I: Integer;
+  lApelido, lValor: TEdit;
+  lColuna, lOperador, lJuncao: TComboBox;
+  lTexto, lValorFiltro, lJuncaoFiltro: string;
+begin
+  for I := 2 to FLinhaFiltro do
+  begin
+    lApelido := RetornarComponente<TEdit>('edtApelidoC',i);
+    lColuna := RetornarComponente<TComboBox>('cbColunaC',i);
+    lValor := RetornarComponente<TEdit>('edtValorC',i);
+    lOperador := RetornarComponente<TComboBox>('cbOperadorC',i);
+    lJuncao := RetornarComponente<TComboBox>('cbJuncaoC',i);
+
+
+    case lOperador.ItemIndex of
+      0: lValorFiltro := QuotedStr(lValor.Text);
+      1: lValorFiltro := ' ''%' + lValor.Text + '%''';
+    end;
+
+    if lJuncao.ItemIndex > 0 then
+      lJuncaoFiltro := lJuncao.Text;
+
+    lTexto := '  (' + lApelido.Text + '.' + lColuna.Text  +
+           ' ' +lOperador.Text + lValorfiltro + ') ' + lJuncaoFiltro;
+
+    if ((lColuna.Text <> EmptyStr) and (lValor.Text <> EmptyStr)) then
+      mmScript.Lines.Add(lTexto);
+  end;
+end;
+
+
+procedure TfrmPrincipal.RemoverUltimaVirgura;
+var
+  lTexto: string;
+  lLinha: Integer;
+begin
+  lLinha := mmScript.Lines.Count-1;
+  mmScript.SelStart := lLinha;
+  lTexto := mmScript.Lines[mmScript.Lines.Count-1];
+  lTexto := Copy(lTexto, 0, Length(lTexto)-1);
+  mmScript.Lines.Delete(lLinha);
+  mmScript.Lines.Add(lTexto);
+end;
+
+
+procedure TfrmPrincipal.AddMemoTabelaJoin();
+var
+  lEspaco: Integer;
+begin
+  mmScript.Lines.Add('  ' + cbTabelaA1.Text +' '+ edtApelidoA1.Text +' '+
+                     cbJoinA1.Text+' ' + cbTabelaB1.Text + ' ' +edtApelidoB1.Text +
+                     ' ON (' + edtApelidoB1.Text + '.' + cbColunaB1.Text +
+                     ' = ' + edtApelidoA1.Text + '.' + cbColunaA1.Text + ')');
+
+  if FLinhaTabelas > 1 then
+  begin
+    lEspaco := Length('  ' + cbTabelaA1.Text +' '+ edtApelidoA1.Text +' ');
+    AddMemoTabelasJoin(FLinhaTabelas, lEspaco);
+  end;
+end;
+
+procedure TfrmPrincipal.AddMemoTabelasJoin(pLinhas, pEspaco: Integer);
+var
+  lTabelaA, lColunaA, lJuncao, lColunaB: TComboBox;
+  lApelidoA, lApelidoB: TEdit;
+  I: Integer;
+  lTexto: string;
+begin
+  for I := 2 to pLinhas-1 do
+  begin
+    lTexto := StringOfChar(' ', pEspaco);
+    lJuncao := RetornarComponente<TComboBox>('cbJoinA',i);
+    lTabelaA := RetornarComponente<TComboBox>('cbTabelaA',i);
+    lApelidoA := RetornarComponente<TEdit>('edtApelidoA',i);
+    lColunaA := RetornarComponente<TComboBox>('cbColunaA',i);
+    lApelidoB := RetornarComponente<TEdit>('edtApelidoB',i);
+    lColunaB := RetornarComponente<TComboBox>('cbColunaB',i);
+
+    lTexto := lTexto + lJuncao.Text+' '+lTabelaA.Text+' '+lApelidoA.Text+
+              ' ON ('+ lApelidoA.Text+'.'+lColunaA.Text+ ' = ' + lApelidoB.Text+'.'+lColunaB.Text+')';
+    mmScript.Lines.Add(lTexto);
+  end;
+end;
+
+
+
+procedure TfrmPrincipal.AddMemoColunas;
+var
+  I, J: Integer;
+  lCampos: TComboBox;
+begin
+  for I := 0 to FListaArrayMarcados.Count-1 do
+  begin
+    lCampos := TComboBox(FindComponent(FListaArrayMarcados[i].Nome));
+
+    if lCampos.Text <> EmptyStr then
+      for J := 2 to lCampos.Items.Count-1 do
+        if FListaArrayMarcados[I].CamposMarcados[j] then
+          mmScript.Lines.Add(lCampos.Items[j]+',');
+  end;
+end;
+
+
+procedure TfrmPrincipal.cbTabelaA1CloseUp(Sender: TObject);
+begin
+  PreencherListaColuna(Sender);
+end;
+
+procedure TfrmPrincipal.cbTabelaB1CloseUp(Sender: TObject);
+begin
+  PreencherListaColuna(Sender);
+end;
+
+
+
+
+procedure TfrmPrincipal.DesenharCheckBoxComboBox(Control: TWinControl; Index: Integer;
+  Rect: TRect; State: TOwnerDrawState);
+var
+  lCampo: string;
+  I: Integer;
+begin
+  lCampo := TComboBox(Control).Name;
+
+  for I := 0 to FListaArrayMarcados.Count-1 do
+    if FListaArrayMarcados[i].Nome = lCampo then
+      Break;
+
+  SetLength(FListaArrayMarcados[i].CamposMarcados, TComboBox(Control).Items.Count);
+
+  with TComboBox(Control).Canvas do
+    begin
+      FillRect(rect);
+
+      Rect.Left := Rect.Left + 1;
+      Rect.Right := Rect.Left + 13;
+      Rect.Bottom := Rect.Bottom;
+      Rect.Top := Rect.Top;
+
+      if not (odSelected in State) and (FListaArrayMarcados[i].CamposMarcados[Index]) then
+        DrawFrameControl(Handle, Rect, DFC_BUTTON, DFCS_BUTTONCHECK or DFCS_CHECKED or DFCS_FLAT)
+      else
+        if (odFocused in State) and (FListaArrayMarcados[i].CamposMarcados[Index]) then
+          DrawFrameControl(Handle, Rect, DFC_BUTTON, DFCS_BUTTONCHECK or DFCS_CHECKED or DFCS_FLAT)
+        else
+          if (FListaArrayMarcados[i].CamposMarcados[Index]) then
+            DrawFrameControl(Handle, Rect, DFC_BUTTON, DFCS_BUTTONCHECK or DFCS_CHECKED or DFCS_FLAT)
+          else
+            if not (FListaArrayMarcados[i].CamposMarcados[Index]) then
+              DrawFrameControl(Handle, Rect, DFC_BUTTON, DFCS_BUTTONCHECK or DFCS_FLAT);
+
+      TextOut(Rect.Left + 15, Rect.Top, TComboBox(Control).Items[Index]);
+    end;
+end;
+
+
+
+procedure TfrmPrincipal.SelecionarCampoVisivel(Sender: TObject);
+var
+  lCampo: string;
+  i: Integer;
+begin
+  lCampo := TComboBox(Sender).Name;
+
+  for I := 0 to FListaArrayMarcados.Count-1 do
+    if FListaArrayMarcados[i].Nome = lCampo then
+      Break;
+
+
+
+  case TComboBox(Sender).ItemIndex of
+    0: MarcarTodos(Sender);
+    1: MarcarTodos(Sender, False);
+  else
+    begin
+      FListaArrayMarcados[i].CamposMarcados[TComboBox(Sender).ItemIndex] := not FListaArrayMarcados[i].CamposMarcados[TComboBox(Sender).ItemIndex];
+      TComboBox(Sender).DroppedDown := True;
+    end;
+  end;
+end;
+
+
+procedure TfrmPrincipal.MarcarTodos(pCampo: TObject; pSim:Boolean=True);
+var
+  I: Integer;
+  lCampo: TComboBox;
+  J: Integer;
+begin
+  lCampo := TComboBox(pCampo);
+
+  for I := 2 to lCampo.Items.Count-1 do
+    for J := 0 to FListaArrayMarcados.Count-1 do
+      if FListaArrayMarcados[j].Nome = lCampo.Name then
+      begin
+        FListaArrayMarcados[j].CamposMarcados[i] := pSim;
+        FListaArrayMarcados[j].CamposMarcados[0] := psim
+      end;
+end;
+
+
+procedure TfrmPrincipal.cbColunaB1Change(Sender: TObject);
+begin
+  CriarCamposTabela();
+end;
+
+procedure TfrmPrincipal.cbColunaB1CloseUp(Sender: TObject);
+begin
+  CriarCamposTabela();
+end;
+
+
+procedure TfrmPrincipal.cbJuncaoC1CloseUp(Sender: TObject);
+begin
+  CriarCamposFiltro;
+  GerarScript;
+end;
+
+procedure TfrmPrincipal.cbTabela9CloseUp(Sender: TObject);
+begin
+  PreencherListaColuna(Sender);
+end;
+
+
+ procedure TfrmPrincipal.PreencherListaColuna(Sender: TObject);
+ var
+  lComboTabela, lComboVisiveis, lComboJoin: TComboBox;
+  lApelido: TEdit;
+  I: Integer;
+  J: Integer;
+begin
+  lComboTabela := Sender as TComboBox;
+  lComboJoin := TComboBox(FindComponent('CbColuna'+RetornarColuna(Sender)+RetornarLinhaObjeto(Sender)));
+  lComboVisiveis := TComboBox(FindComponent('CbColunasVisiveis'+RetornarColuna(Sender)+RetornarLinhaObjeto(Sender)));
+  lApelido := TEdit(FindComponent('edtApelido'+RetornarColuna(Sender)+RetornarLinhaObjeto(Sender)));
+  lApelido.Text := CriarApelido(lComboTabela.Text);
+
+  lComboJoin.Clear;
+
+  for I := 0 to FListaColunas.Count-1 do
+   if FListaColunas.Items[i].Tabela = lComboTabela.Text then
+    lComboJoin.Items.Add(FListaColunas.Items[i].Nome);
+
+
+  if RetornarColuna(Sender) <> 'C' then
+  begin
+    lComboVisiveis.Clear;
+    lComboVisiveis.Items.Add('__Selecionar todas__');
+    lComboVisiveis.Items.Add('__Desmarcar todas__');
+
+    for J := 0 to lComboJoin.Items.Count-1 do
+      lComboVisiveis.Items.Add('  ' + lApelido.Text +'.'+ lComboJoin.Items[j]);
+
+  end;
+end;
+
+
+ procedure TfrmPrincipal.PreencherListaColunaApelido(Sender: TObject);
+ var
+  lComboTabela, lComboVisiveis, lComboJoin: TComboBox;
+  lApelido: TEdit;
+  I: Integer;
+  J: Integer;
+  lColuna, lLinha: string;
+begin
+  lApelido := Sender as TEdit;
+
+  if lApelido.Text = EmptyStr then
+    Exit;
+
+  lColuna := Copy(lApelido.Name, 11,1);
+  lLinha := Copy(lApelido.Name, 12, Length(lApelido.Name));
+
+  lComboTabela := RetornarComponente<TComboBox>('cbTabela'+lColuna,StrToInt(lLinha));
+  lComboJoin := RetornarComponente<TComboBox>('CbColuna'+lColuna,StrToInt(lLinha));
+  lComboVisiveis := RetornarComponente<TComboBox>('CbColunasVisiveis'+lColuna,StrToInt(lLinha));
+
+  lComboJoin.Clear;
+
+  for I := 0 to FListaColunas.Count-1 do
+   if FListaColunas.Items[i].Tabela = lComboTabela.Text then
+    lComboJoin.Items.Add(FListaColunas.Items[i].Nome);
+
+  if lColuna <> 'C' then
+  begin
+    lComboVisiveis.Clear;
+    lComboVisiveis.Items.Add('__Selecionar todas__');
+    lComboVisiveis.Items.Add('__Desmarcar todas__');
+
+    for J := 0 to lComboJoin.Items.Count-1 do
+      lComboVisiveis.Items.Add('  ' + lApelido.Text +'.'+ lComboJoin.Items[j]);
+  end;
+end;
+
+
+
+function TfrmPrincipal.RetornarColuna(pObjeto: Tobject):string;
+var
+  lNome: string;
+begin
+  lNome := (pObjeto as TComboBox).Name;
+  Result := Copy(lNome, 9,1);
+end;
+
+
+function TfrmPrincipal.RetornarLinhaObjeto(pObjeto: TObject):string;
+var
+  lNome: string;
+begin
+  lNome := (pObjeto as TComboBox).Name;
+  Result := Copy(lNome, 10,Length(lNome));
+end;
+
+
+
+procedure TfrmPrincipal.sbFiltroMouseWheelDown(Sender: TObject; Shift: TShiftState; MousePos: TPoint; var Handled: Boolean);
+begin
+ScrollDown(sbFiltro);
+end;
+
+procedure TfrmPrincipal.sbFiltroMouseWheelUp(Sender: TObject; Shift: TShiftState; MousePos: TPoint; var Handled: Boolean);
+begin
+  ScrollUp(sbFiltro);
+end;
+
+
+procedure TfrmPrincipal.sbPrincipalMouseWheelDown(Sender: TObject; Shift: TShiftState; MousePos: TPoint; var Handled: Boolean);
+begin
+  ScrollDown(sbPrincipal);
+end;
+
+procedure TfrmPrincipal.sbPrincipalMouseWheelUp(Sender: TObject; Shift: TShiftState; MousePos: TPoint; var Handled: Boolean);
+begin
+  ScrollUp(sbPrincipal);
+end;
+
+
+
+end.
+

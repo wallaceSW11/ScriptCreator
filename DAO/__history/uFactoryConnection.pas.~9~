@@ -1,0 +1,35 @@
+unit uFactoryConnection;
+
+interface
+
+  uses
+    System.SysUtils, System.Classes, Data.DB, Datasnap.DBClient,
+  ZAbstractRODataset, ZAbstractDataset, ZDataset, ZAbstractConnection,
+  ZConnection, ZDbcIntfs, StrUtils, uConexaoSingleton, uDadosServidor;
+
+type
+  TFactoryConnection = class
+    class function Conectar():TZConnection;
+  end;
+
+implementation
+
+uses
+  Vcl.Forms;
+
+  class function TFactoryConnection.Conectar;
+var
+  lConexao : TZConnection;
+begin
+  lConexao := TZConnection.Create(nil);
+  lConexao.HostName := TDadosServidor.DadosAcesso('Servidor');
+  lConexao.Database := TDadosServidor.DadosAcesso('Banco');
+  lConexao.Protocol := TDadosServidor.DadosAcesso('Protocolo');
+  lConexao.User := TDadosServidor.DadosAcesso('Usuario');
+  lConexao.Password := TDadosServidor.DadosAcesso('Senha');
+  lConexao.LoginPrompt := False;
+  lConexao.TransactIsolationLevel := tiReadCommitted;
+  result := lConexao;
+end;
+end.
+

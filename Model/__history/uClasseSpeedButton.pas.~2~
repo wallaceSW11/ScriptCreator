@@ -1,0 +1,31 @@
+unit uClasseSpeedButton;
+
+interface
+
+uses
+  Vcl.Forms;
+
+type
+  TEvento = procedure (Value : TObject) of object;
+
+
+type
+  TClasseSpeedButton = class
+    private
+      FNome: string;
+      FCaption: string;
+      FParent: TScrollbox;
+      FFlat: Boolean;
+      Fleft: Integer;
+      FTop: integer;
+      FWidth: Integer;
+      FOnClick: TEvento;
+
+    public
+
+
+  end;
+
+implementation
+
+end.

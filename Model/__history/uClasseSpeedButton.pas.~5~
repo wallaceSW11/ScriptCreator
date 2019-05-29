@@ -1,0 +1,60 @@
+unit uClasseSpeedButton;
+
+interface
+
+uses
+  Vcl.Forms;
+
+type
+  TEvento = procedure (Value : TObject) of object;
+
+
+type
+  TClasseSpeedButton = class
+    private
+      FNome: string;
+      FCaption: string;
+      FParent: TScrollbox;
+      FFlat: Boolean;
+      Fleft: Integer;
+      FTop: integer;
+      FWidth: Integer;
+      FOnClick: TEvento;
+    public
+      property Nome: string read FNome write FNome;
+      property Caption: string read FCaption write FCaption;
+      property Parent: TScrollBox read FParent write FParent;
+      property Flat: Boolean read FFlat write FFlat;
+      property Left: Integer read Fleft write Fleft;
+      property Top: integer read FTop write FTop;
+      property Width: integer read FWidth write FWidth;
+      property OnClick: TEvento read FOnClick write FOnClick;
+
+      constructor Create();
+      destructor Destroy(); override;
+      //class function New():TClasseSpeedButton;
+
+
+  end;
+
+implementation
+
+{ TClasseSpeedButton }
+
+constructor TClasseSpeedButton.Create;
+begin
+  Self.Create;
+end;
+
+destructor TClasseSpeedButton.Destroy;
+begin
+
+  inherited;
+end;
+
+//class function TClasseSpeedButton.New: TClasseSpeedButton;
+//begin
+//  Result := Self.Create;
+//end;
+
+end.

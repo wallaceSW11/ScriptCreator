@@ -1,0 +1,48 @@
+unit uDadosServidorDAO;
+
+interface
+
+uses
+  System.SysUtils, System.Generics.Collections, System.Win.IEInterfaces,
+  StrUtils,  Data.DB, Datasnap.DBClient,
+  ZAbstractRODataset, ZAbstractDataset, ZDataset, ZAbstractConnection,
+  ZConnection, ZDbcIntfs,  System.Classes, System.Rtti, System.TypInfo,
+  System.Variants;
+
+type
+  TDadosServidorDAO = class
+
+private
+  const
+    CONSULTAR_DADOS_CONEXAO =  'Select ' +
+                               '  VlConfiguracao ' +
+                               'From ' +
+                               '  Configuracao ' +
+                               'Where ' +
+                               '  NmConfiguracao = ''%s'' ';
+
+public
+  //class function TDadosServidorDAO.RetornarDadosConexao(pCampo: string):string;
+
+end;
+
+implementation
+
+{ TTextoPadraoDAO }
+
+//class function TDadosServidorDAO.RetornarColunas(pTabela: string): TObjectList<TColuna>;
+//begin
+//  Result := TCRUD<TColuna>.Select(
+//    Format(CONSULTAR_COLUNA, [pTabela]));
+//end;
+
+
+//class function TDadosServidorDAO.RetornarDadosConexao(pCampo: string):string;
+//begin
+//  Result := SelectSimples(
+//    Format(CONSULTAR_DADOS_CONEXAO, [pCampo]));
+//end;
+
+
+end.
+

@@ -1,0 +1,10 @@
+inherited frmPesquisaTabela: TfrmPesquisaTabela
+  Caption = 'Pesquisar tabela'
+  PixelsPerInch = 96
+  TextHeight = 13
+  inherited cbTipo: TComboBox
+    Items.Strings = (
+      'Schema'
+      'Nome')
+  end
+end

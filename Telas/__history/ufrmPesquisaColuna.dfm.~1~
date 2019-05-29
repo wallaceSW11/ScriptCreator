@@ -1,0 +1,5 @@
+inherited frmPesquisaColuna: TfrmPesquisaColuna
+  Caption = 'Pesquisar coluna'
+  PixelsPerInch = 96
+  TextHeight = 13
+end

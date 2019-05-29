@@ -1,0 +1,44 @@
+unit uFactoryConnection;
+
+interface
+
+  uses
+    System.SysUtils, System.Classes, Data.DB, Datasnap.DBClient,
+  ZAbstractRODataset, ZAbstractDataset, ZDataset, ZAbstractConnection,
+  ZConnection, ZDbcIntfs, StrUtils, uConexaoSingleton;
+
+type
+  TFactoryConnection = class
+    class function Conectar():TZConnection;
+  end;
+
+implementation
+
+uses
+  Vcl.Forms;
+
+class function TFactoryConnection.Conectar;
+var
+  lConexao : TZConnection;
+begin
+  lConexao := TZConnection.Create(nil);
+  lConexao.HostName := TConexaoSingleton.ObterInstancia.Servidor;
+  lConexao.Database := TConexaoSingleton.ObterInstancia.Base;
+  lConexao.User :=     TConexaoSingleton.ObterInstancia.Usuario;
+  lConexao.Password := TConexaoSingleton.ObterInstancia.Senha;
+  lConexao.Protocol := TConexaoSingleton.ObterInstancia.Protocolo;
+  lConexao.LoginPrompt := False;
+  lConexao.TransactIsolationLevel := tiReadCommitted;
+
+//  lConexao := TZConnection.Create(nil);
+//  //lConexao.HostName := TConexaoDAO.RetornarDadosConexao('Servidor');
+//  lConexao.Database := 'BASE705';
+//  lConexao.Protocol := 'mssql';
+//  lConexao.User := 'sa';
+//  lConexao.Password := 'senhas';
+//  lConexao.LoginPrompt := False;
+//  lConexao.TransactIsolationLevel := tiReadCommitted;
+  result := lConexao;
+end;
+end.
+

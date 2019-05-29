@@ -1,0 +1,27 @@
+unit uConexao;
+
+interface
+
+uses
+  System.TypInfo, System.Rtti, System.Classes, System.SysUtils;
+
+type
+  TConexao = class (TPersistent)
+
+  protected
+    FTipo: string;
+    FServidor: string;
+    FPorta: string;
+    FBase: string;
+    FUsuario: string;
+    FSenha: string;
+
+  published
+
+
+
+  end;
+
+implementation
+
+end.

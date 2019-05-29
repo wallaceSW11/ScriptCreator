@@ -1,0 +1,40 @@
+unit ufrmCadastro;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, uTextoPadraoDAO, uTextoPadrao;
+
+type
+  TfrmCadastro = class(TForm)
+    edtID: TEdit;
+    edtDescricao: TEdit;
+    edtCodigo: TEdit;
+    mmTexto: TMemo;
+    btnOK: TButton;
+    btnCancelar: TButton;
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+
+  procedure MostrarTela(pObjeto: TTextoPadrao);
+  end;
+
+var
+  frmCadastro: TfrmCadastro;
+
+implementation
+
+{$R *.dfm}
+
+{ TfrmCadastro }
+
+procedure TfrmCadastro.MostrarTela(pObjeto: TTextoPadrao);
+begin
+
+ShowModal;
+end;
+
+end.

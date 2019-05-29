@@ -1,0 +1,31 @@
+unit uDadosServidor;
+
+interface
+
+uses
+  StrUtils, uConexaoDAO;
+
+type
+  TDadosServidor = class
+  class function DadosAcesso(lTipo:string):string;
+  end;
+
+implementation
+
+
+class function TDadosServidor.DadosAcesso(lTipo: string):string;
+begin
+  result := TConexaoDAO.RetornarDadosConexao(lTipo);
+
+
+
+//  case AnsiIndexText(lTipo, ['Servidor', 'Base','Usuário','Senha','Protocolo']) of
+//    0: Result := TRegistro.LerRegistro('SWSolucoes', 'Conexao', 'Servidor');
+//    1: Result := TRegistro.LerRegistro('SWSolucoes', 'Conexao', 'Base');
+//    2: Result := TRegistro.LerRegistro('SWSolucoes', 'Conexao', 'Usuário');
+//    3: Result := TRegistro.LerRegistro('SWSolucoes', 'Conexao', 'Senha');
+//    4: Result := TRegistro.LerRegistro('SWSolucoes', 'Conexao', 'Protocolo');
+//  end;
+end;
+
+end.

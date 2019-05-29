@@ -1,0 +1,22 @@
+unit uTabela;
+
+interface
+
+uses
+  System.TypInfo, System.Rtti, System.Classes, System.SysUtils;
+
+type
+  TTabela = class (TPersistent)
+
+  protected
+    FNome: string;
+
+  published
+    property Nome: string read FNome write FNome;
+
+
+  end;
+
+implementation
+
+end.

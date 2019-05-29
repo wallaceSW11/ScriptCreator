@@ -1,0 +1,72 @@
+unit ufrmCadastro;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, uTextoPadraoDAO, uTextoPadrao,
+  uCadastroHelper;
+
+type
+  TfrmCadastro = class(TForm)
+    edtID: TEdit;
+    edtDescricao: TEdit;
+    edtCodigo: TEdit;
+    mmTexto: TMemo;
+    btnOK: TButton;
+    btnCancelar: TButton;
+    procedure btnOKClick(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+
+  procedure MostrarTela(pObjeto: TTextoPadrao); overload;
+  procedure MostrarTela(); overload;
+  end;
+
+var
+  frmCadastro: TfrmCadastro;
+
+implementation
+
+{$R *.dfm}
+
+{ TfrmCadastro }
+
+procedure TfrmCadastro.btnOKClick(Sender: TObject);
+var
+  lTexto: TTextoPadrao;
+begin
+  lTexto := TTextoPadrao.Create;
+
+  lTexto.ID := StrToInt(edtID.Text);
+  lTexto.Codigo := edtCodigo.Text;
+  lTexto.Descricao := edtDescricao.Text;
+  lTexto.Texto := mmTexto.Text;
+
+  TTextoPadraoDAO.GravarTextoPadrao(lTexto);
+
+  Close;
+end;
+
+procedure TfrmCadastro.MostrarTela(pObjeto: TTextoPadrao);
+begin
+  if pObjeto <> nil then
+  begin
+    edtID.Text := IntToStr(pObjeto.ID);
+    edtCodigo.Text := pObjeto.Codigo;
+    edtDescricao.Text := pObjeto.Descricao;
+    mmTexto.Lines.Add(pObjeto.Texto);
+  end;
+
+  ShowModal;
+end;
+
+procedure TfrmCadastro.MostrarTela;
+begin
+  edtCodigo.Text := TCadastroHelper.NextCode('Texto');
+  ShowModal;
+end;
+
+end.

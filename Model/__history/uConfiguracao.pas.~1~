@@ -1,0 +1,17 @@
+unit uConfiguracao;
+
+interface
+
+uses
+  System.Classes, uCRUD;
+
+type
+  TConfiguracao = class (Tpersistent)
+
+  end;
+
+
+
+implementation
+
+end.

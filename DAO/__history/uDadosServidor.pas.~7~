@@ -1,0 +1,72 @@
+unit uDadosServidor;
+
+interface
+
+uses
+  StrUtils, ZAbstractRODataset, ZAbstractDataset, ZDataset, ZAbstractConnection,
+  ZConnection, ZDbcIntfs, System.SysUtils, Vcl.Forms;
+
+type
+  TDadosServidor = class
+  class function DadosAcesso(lTipo:string):string;
+  class function IniciarConsulta(pComando: string):TZQuery;
+  private
+    class function Conectar: TZConnection;
+ end;
+
+implementation
+
+class function TDadosServidor.DadosAcesso(lTipo: string):string;
+begin
+  case AnsiIndexText(lTipo, ['Servidor', 'Base','Usuário','Senha','Protocolo']) of
+    0: Result := 'PAT1570\SQLEXPRESS';
+    1: Result := 'BASE705';
+    2: Result := 'sa';
+    3: Result := 'senhas';
+    4: Result := 'mssql';
+  end;
+end;
+
+//
+class function TDadosServidor.IniciarConsulta(pComando: string):TZQuery;
+var
+  lQuery : TZQuery;
+begin
+  lQuery := TZQuery.Create(nil);
+  lQuery.Connection := self.Conectar;
+  lQuery.Connection.Connected := True;
+  lQuery.Close;
+  lQuery.SQL.Add(pComando);
+  Result := lQuery;
+end;
+
+
+class function TDadosServidor.Conectar:TZConnection;
+var
+  lConexao : TZConnection;
+begin
+  lConexao := TZConnection.Create(nil);
+  lConexao.Database := ExtractFileDir(Application.ExeName) + '\ScriptCreatorDB.s3db';
+  lConexao.Protocol := 'sqlite';
+  lConexao.LoginPrompt := False;
+  lConexao.TransactIsolationLevel := tiReadCommitted;
+  result := lConexao;
+end;
+
+
+//class function TDadosServidor.DadosAcesso(lTipo: string):string;
+//begin
+//  //result := TConexaoDAO.RetornarDadosConexao(lTipo);
+//
+//
+//
+////  case AnsiIndexText(lTipo, ['Servidor', 'Base','Usuário','Senha','Protocolo']) of
+////    0: Result := TRegistro.LerRegistro('SWSolucoes', 'Conexao', 'Servidor');
+////    1: Result := TRegistro.LerRegistro('SWSolucoes', 'Conexao', 'Base');
+////    2: Result := TRegistro.LerRegistro('SWSolucoes', 'Conexao', 'Usuário');
+////    3: Result := TRegistro.LerRegistro('SWSolucoes', 'Conexao', 'Senha');
+////    4: Result := TRegistro.LerRegistro('SWSolucoes', 'Conexao', 'Protocolo');
+////  end;
+//end;
+
+end.
