@@ -15,7 +15,7 @@ type
    public
     Nome: String;
     CamposMarcados : array of Boolean;
-
+    // agora no github
   end;
 
 type
